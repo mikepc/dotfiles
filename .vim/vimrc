@@ -7,9 +7,13 @@ if has('vim_starting')
   set nocompatible               " Be iMproved
 endif
 
+
+set completeopt=longest,menuone,noinsert
+
+
 let vimplug_exists=expand('~/.vim/autoload/plug.vim')
 
-let g:vim_bootstrap_langs = "go,ruby"
+let g:vim_bootstrap_langs = "go,ruby,python"
 let g:vim_bootstrap_editor = "vim"				" nvim or vim
 
 if !filereadable(vimplug_exists)
@@ -32,6 +36,7 @@ call plug#begin(expand('~/.vim/plugged'))
 "" Plug install packages
 "*****************************************************************************
 Plug 'scrooloose/nerdtree'
+Plug 'lifepillar/vim-mucomplete'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
@@ -47,6 +52,31 @@ Plug 'scrooloose/syntastic'
 Plug 'Yggdroot/indentLine'
 Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
+Plug 'mdempsky/gocode', { 'rtp': 'vim/'}
+Plug 'ryanoasis/vim-devicons'
+
+" Python Plugins
+Plug 'davidhalter/jedi-vim'
+Plug 'klen/python-mode', { 'branch': 'develop' }
+Plug 'hynek/vim-python-pep8-indent'
+Plug 'mitsuhiko/vim-jinja'
+Plug 'jmcantrell/vim-virtualenv'
+
+"mucomplete settings
+
+let g:mucomplete#enable_auto_at_startup=1
+
+
+let g:pymode_python = 'python3'
+let g:pymode_syntax_all = 1
+let g:pymode_rope = 0 " Too much
+let g:pymode_options = 0
+let g:pymode_lint_checkers = ["pep8"]
+let g:jedi#completions_command = "<leader><Space>"
+if has('python3')
+  silent! python3 1
+endif
+
 if isdirectory('/usr/local/opt/fzf')
   Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 else
@@ -63,17 +93,6 @@ Plug 'Shougo/vimproc.vim', {'do': g:make}
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-session'
 
-if v:version >= 703
-  Plug 'Shougo/vimshell.vim'
-endif
-
-if v:version >= 704
-  "" Snippets
-  Plug 'SirVer/ultisnips'
-endif
-
-Plug 'honza/vim-snippets'
-
 "" Color
 Plug 'tomasr/molokai'
 
@@ -84,14 +103,6 @@ Plug 'tomasr/molokai'
 " go
 "" Go Lang Bundle
 Plug 'fatih/vim-go', {'do': ':GoInstallBinaries'}
-
-
-" ruby
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-rake'
-Plug 'tpope/vim-projectionist'
-Plug 'thoughtbot/vim-rspec'
-Plug 'ecomba/vim-ruby-refactoring'
 
 
 "*****************************************************************************
@@ -236,9 +247,9 @@ endif
 let g:airline_theme = 'powerlineish'
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#branch#enabled = 1
-let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tagbar#enabled = 1
 let g:airline_skip_empty_sections = 1
+let g:airline_powerline_fonts = 1
 
 "*****************************************************************************
 "" Abbreviations
@@ -269,7 +280,8 @@ let NERDTreeQuitOnOpen = 0
 
 
 nnoremap <silent> <F2> :NERDTreeFind<CR>
-nnoremap <silent> <F3> :NERDTreeToggle<CR>
+nnoremap <silent> <leader>t :NERDTreeToggle<CR>
+nnoremap <silent> <leader>j :TagbarToggle<CR>
 
 " grep.vim
 nnoremap <silent> <leader>f :Rgrep<CR>
@@ -343,7 +355,6 @@ noremap <Leader>gc :Gcommit<CR>
 noremap <Leader>gsh :Gpush<CR>
 noremap <Leader>gll :Gpull<CR>
 noremap <Leader>gs :Gstatus<CR>
-noremap <Leader>gb :Gblame<CR>
 noremap <Leader>gd :Gvdiff<CR>
 noremap <Leader>gr :Gremove<CR>
 
@@ -354,9 +365,9 @@ nnoremap <leader>sd :DeleteSession<CR>
 nnoremap <leader>sc :CloseSession<CR>
 
 "" Tabs
-nnoremap <Tab> gt
-nnoremap <S-Tab> gT
-nnoremap <silent> <S-t> :tabnew<CR>
+"nnoremap <Tab> gt
+"nnoremap <S-Tab> gT
+"nnoremap <silent> <S-t> :tabnew<CR>
 
 "" Set working directory
 nnoremap <leader>. :lcd %:p:h<CR>
@@ -455,8 +466,6 @@ vmap > >gv
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-"" Open current line on GitHub
-nnoremap <Leader>o :.Gbrowse<CR>
 
 "*****************************************************************************
 "" Custom configs
@@ -477,7 +486,9 @@ endfunction
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "goimports"
 let g:go_fmt_fail_silently = 1
-let g:syntastic_go_checkers = ['golint', 'govet']
+" let g:syntastic_go_checkers = ['golint', 'govet']
+
+let g:syntastic_go_checkers = ['govet']
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 
 let g:go_highlight_types = 1
@@ -495,27 +506,27 @@ let g:go_highlight_extra_types = 1
 
 autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
 
-augroup completion_preview_close
-  autocmd!
-  if v:version > 703 || v:version == 703 && has('patch598')
-    autocmd CompleteDone * if !&previewwindow && &completeopt =~ 'preview' | silent! pclose | endif
-  endif
-augroup END
+"augroup completion_preview_close
+"  autocmd!
+"  if v:version > 703 || v:version == 703 && has('patch598')
+"    autocmd CompleteDone * if !&previewwindow && &completeopt =~ 'preview' | silent! pclose | endif
+"  endif
+"augroup END
 
 augroup go
-
-  au!
+  
+    au!
   au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
   au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
   au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
   au Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
 
   au FileType go nmap <Leader>dd <Plug>(go-def-vertical)
-  au FileType go nmap <Leader>dv <Plug>(go-doc-vertical)
+  au FileType go nmap <SLeader>dv <Plug>(go-doc-vertical)
   au FileType go nmap <Leader>db <Plug>(go-doc-browser)
 
   au FileType go nmap <leader>r  <Plug>(go-run)
-  au FileType go nmap <leader>t  <Plug>(go-test)
+  au FileType go nmap <leader>ts  <Plug>(go-test)
   au FileType go nmap <Leader>i <Plug>(go-info)
   au FileType go nmap <silent> <Leader>l <Plug>(go-metalinter)
   au FileType go nmap <C-g> :GoDecls<cr>
@@ -524,63 +535,9 @@ augroup go
   au FileType go imap <leader>dr <esc>:<C-u>GoDeclsDir<cr>
   au FileType go nmap <leader>rb :<C-u>call <SID>build_go_files()<CR>
 
+  au FileType go noremap <Leader>gb :GoBuild<CR>
 augroup END
 
-
-" ruby
-let g:rubycomplete_buffer_loading = 1
-let g:rubycomplete_classes_in_global = 1
-let g:rubycomplete_rails = 1
-
-augroup vimrc-ruby
-  autocmd!
-  autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
-  autocmd FileType ruby set tabstop=2|set shiftwidth=2|set expandtab softtabstop=2
-augroup END
-
-let g:tagbar_type_ruby = {
-    \ 'kinds' : [
-        \ 'm:modules',
-        \ 'c:classes',
-        \ 'd:describes',
-        \ 'C:contexts',
-        \ 'f:methods',
-        \ 'F:singleton methods'
-    \ ]
-\ }
-
-" RSpec.vim mappings
-map <Leader>t :call RunCurrentSpecFile()<CR>
-map <Leader>s :call RunNearestSpec()<CR>
-map <Leader>l :call RunLastSpec()<CR>
-map <Leader>a :call RunAllSpecs()<CR>
-
-" For ruby refactory
-if has('nvim')
-  runtime! macros/matchit.vim
-else
-  packadd! matchit
-endif
-
-" Ruby refactory
-nnoremap <leader>rap  :RAddParameter<cr>
-nnoremap <leader>rcpc :RConvertPostConditional<cr>
-nnoremap <leader>rel  :RExtractLet<cr>
-vnoremap <leader>rec  :RExtractConstant<cr>
-vnoremap <leader>relv :RExtractLocalVariable<cr>
-nnoremap <leader>rit  :RInlineTemp<cr>
-vnoremap <leader>rrlv :RRenameLocalVariable<cr>
-vnoremap <leader>rriv :RRenameInstanceVariable<cr>
-vnoremap <leader>rem  :RExtractMethod<cr>
-
-
-"*****************************************************************************
-"*****************************************************************************
-
-"" Include user's local vim config
-if filereadable(expand("~/.vimrc.local"))
-  source ~/.vimrc.local
-endif
 
 "*****************************************************************************
 "" Convenience variables
@@ -592,8 +549,6 @@ if !exists('g:airline_symbols')
 endif
 
 if !exists('g:airline_powerline_fonts')
-  let g:airline#extensions#tabline#left_sep = ' '
-  let g:airline#extensions#tabline#left_alt_sep = '|'
   let g:airline_left_sep          = '▶'
   let g:airline_left_alt_sep      = '»'
   let g:airline_right_sep         = '◀'
@@ -609,8 +564,6 @@ if !exists('g:airline_powerline_fonts')
   let g:airline_symbols.paste     = '∥'
   let g:airline_symbols.whitespace = 'Ξ'
 else
-  let g:airline#extensions#tabline#left_sep = ''
-  let g:airline#extensions#tabline#left_alt_sep = ''
 
   " powerline symbols
   let g:airline_left_sep = ''
@@ -621,3 +574,87 @@ else
   let g:airline_symbols.readonly = ''
   let g:airline_symbols.linenr = ''
 endif
+"=====================================================
+"" DevIcon Settings
+"=====================================================
+" loading the plugin 
+
+let g:webdevicons_enable = 1
+
+" adding the flags to NERDTree 
+let g:webdevicons_enable_nerdtree = 1
+
+
+" adding to vim-airline's statusline
+let g:webdevicons_enable_airline_statusline = 1
+
+" turn on/off file node glyph decorations (not particularly useful)
+let g:WebDevIconsUnicodeDecorateFileNodes = 1
+
+" use double-width(1) or single-width(0) glyphs 
+" only manipulates padding, has no effect on terminal or set(guifont) font
+let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
+
+" whether or not to show the nerdtree brackets around flags 
+let g:webdevicons_conceal_nerdtree_brackets = 0
+
+" the amount of space to use after the glyph character (default ' ')
+let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
+
+" Force extra padding in NERDTree so that the filetype icons line up vertically
+let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1 
+
+" change the default character when no match found
+let g:WebDevIconsUnicodeDecorateFileNodesDefaultSymbol = 'ƛ'
+
+" set a byte character marker (BOM) utf-8 symbol when retrieving file encoding
+" disabled by default with no value
+let g:WebDevIconsUnicodeByteOrderMarkerDefaultSymbol = ''
+
+" enable folder/directory glyph flag (disabled by default with 0)
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+
+" enable open and close folder/directory glyph flags (disabled by default with 0)
+let g:DevIconsEnableFoldersOpenClose = 1
+
+" enable pattern matching glyphs on folder/directory (enabled by default with 1)
+let g:DevIconsEnableFolderPatternMatching = 1
+
+" enable file extension pattern matching glyphs on folder/directory (disabled by default with 0)
+let g:DevIconsEnableFolderExtensionPatternMatching = 0
+
+if exists("g:loaded_webdevicons")
+    call webdevicons#refresh()
+endif
+
+no <down> <Nop>
+no <left> <Nop>
+no <right> <Nop>
+no <up> <Nop>
+
+ino <down> <Nop>
+ino <left> <Nop>
+ino <right> <Nop>
+ino <up> <Nop>
+
+vno <down> <Nop>
+vno <left> <Nop>
+vno <right> <Nop>
+vno <up> <Nop>
+
+
+
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+
+inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+
+inoremap <expr> <C-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
+            \ '<C-x><C-o><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
+
+inoremap <expr> <S-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
+            \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
+
+
