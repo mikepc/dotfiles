@@ -54,7 +54,7 @@ Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
 Plug 'mdempsky/gocode', { 'rtp': 'vim/'}
 Plug 'ryanoasis/vim-devicons'
-
+Plug 'sebdah/vim-delve'
 " Python Plugins
 Plug 'davidhalter/jedi-vim'
 Plug 'klen/python-mode', { 'branch': 'develop' }
