@@ -526,7 +526,7 @@ augroup go
   au FileType go nmap <Leader>db <Plug>(go-doc-browser)
 
   au FileType go nmap <leader>r  <Plug>(go-run)
-  au FileType go nmap <leader>ts  <Plug>(go-test)
+  au FileType go nmap <leader>g <Plug>(go-test)
   au FileType go nmap <Leader>i <Plug>(go-info)
   au FileType go nmap <silent> <Leader>l <Plug>(go-metalinter)
   au FileType go nmap <C-g> :GoDecls<cr>
