@@ -1,0 +1,31 @@
+snippet stest "simple comment"
+package ${1}
+
+import (
+	"testing"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+)
+
+type $2Suite struct{
+	suite.Suite
+}
+func (suite *$2Suite) SetupTest(){
+	
+}
+func (suite *$2Suite) TestTruth(){
+
+}
+
+func Test$2Suite(t *testing.T) {
+	suite.Run(t, new($2Suite))
+}
+endsnippet
+
+snippet sts "unit test with suite"
+func (suite *$1Suite) TestPrepare() {
+	$2
+}
+endsnippet
+
+

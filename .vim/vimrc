@@ -36,7 +36,7 @@ call plug#begin(expand('~/.vim/plugged'))
 "" Plug install packages
 "*****************************************************************************
 Plug 'scrooloose/nerdtree'
-Plug 'lifepillar/vim-mucomplete'
+" Plug 'lifepillar/vim-mucomplete'
 Plug 'jistr/vim-nerdtree-tabs'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
@@ -61,11 +61,17 @@ Plug 'klen/python-mode', { 'branch': 'develop' }
 Plug 'hynek/vim-python-pep8-indent'
 Plug 'mitsuhiko/vim-jinja'
 Plug 'jmcantrell/vim-virtualenv'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'mhinz/vim-startify'
+" let g:mucomplete#enable_auto_at_startup=1
 
-"mucomplete settings
+" ultisnips
 
-let g:mucomplete#enable_auto_at_startup=1
-
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsSnippetDirectories = ['~/.vim/UltiSnips', 'UltiSnips']
 
 let g:pymode_python = 'python3'
 let g:pymode_syntax_all = 1
@@ -95,23 +101,23 @@ Plug 'xolox/vim-session'
 
 "" Color
 Plug 'tomasr/molokai'
-
+colorscheme molokai
 "*****************************************************************************
 "" Custom bundles
 "*****************************************************************************
 
 " go
 "" Go Lang Bundle
-Plug 'fatih/vim-go', {'do': ':GoInstallBinaries'}
+Plug 'fatih/vim-go', {'do': ':GoUpdateBinaries'}
 
 
 "*****************************************************************************
 "*****************************************************************************
 
 "" Include user's extra bundle
-if filereadable(expand("~/.vimrc.local.bundles"))
-  source ~/.vimrc.local.bundles
-endif
+" if filereadable(expand("~/.vimrc.local.bundles"))
+"  source ~/.vimrc.local.bundles
+"endif
 
 call plug#end()
 
@@ -177,9 +183,9 @@ set ruler
 set number
 
 let no_buffers_menu=1
-if !exists('g:not_finish_vimplug')
-  colorscheme molokai
-endif
+" if !exists('g:not_finish_vimplug')
+"  colorscheme molokai
+" endif
 
 set mousemodel=popup
 set t_Co=256
@@ -400,12 +406,6 @@ cnoremap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 nnoremap <silent> <leader>b :Buffers<CR>
 nnoremap <silent> <leader>e :FZF -m<CR>
 
-" snippets
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<c-b>"
-let g:UltiSnipsEditSplit="vertical"
-
 " syntastic
 let g:syntastic_always_populate_loc_list=1
 let g:syntastic_error_symbol='✗'
@@ -431,7 +431,7 @@ if has('unnamedplus')
 endif
 
 noremap YY "+y<CR>
-noremap <leader>p "+gP<CR>
+"" Using leader p for replace with paste buffer noremap <leader>p "+gP<CR>
 noremap XX "+x<CR>
 
 if has('macunix')
@@ -642,6 +642,7 @@ vno <left> <Nop>
 vno <right> <Nop>
 vno <up> <Nop>
 
+nnoremap <leader>p ciw<C-r>0<ESC>
 
 
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -657,4 +658,12 @@ inoremap <expr> <C-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Es
 inoremap <expr> <S-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
             \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
 
+let NERDTreeHijackNetrw = 0
+
+autocmd VimEnter *
+                \   if !argc()
+                \ |   Startify
+                \ |   NERDTree
+                \ |   wincmd w
+                \ | endif
 
