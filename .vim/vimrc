@@ -8,13 +8,15 @@ if has('vim_starting')
 endif
 
 
-set completeopt=longest,menuone,noinsert
+set completeopt=longest,menuone,noselect,noinsert
 
 
 let vimplug_exists=expand('~/.vim/autoload/plug.vim')
 
 let g:vim_bootstrap_langs = "go,ruby,python"
 let g:vim_bootstrap_editor = "vim"				" nvim or vim
+let g:mucomplete#completion_delay = 1
+
 
 if !filereadable(vimplug_exists)
   if !executable("curl")
@@ -55,23 +57,24 @@ Plug 'sheerun/vim-polyglot'
 Plug 'mdempsky/gocode', { 'rtp': 'vim/'}
 Plug 'ryanoasis/vim-devicons'
 Plug 'sebdah/vim-delve'
+Plug 'posva/vim-vue'
 " Python Plugins
 Plug 'davidhalter/jedi-vim'
 Plug 'klen/python-mode', { 'branch': 'develop' }
 Plug 'hynek/vim-python-pep8-indent'
 Plug 'mitsuhiko/vim-jinja'
 Plug 'jmcantrell/vim-virtualenv'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+"Plug 'SirVer/ultisnips'
+" Plug 'honza/vim-snippets'
 Plug 'mhinz/vim-startify'
-" let g:mucomplete#enable_auto_at_startup=1
+let g:mucomplete#enable_auto_at_startup=1
 
 " ultisnips
 
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UltiSnipsSnippetDirectories = ['~/.vim/UltiSnips', 'UltiSnips']
+"let g:UltiSnipsExpandTrigger="<tab>"
+"let g:UltiSnipsJumpForwardTrigger="<c-b>"
+"let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+"let g:UltiSnipsSnippetDirectories = ['~/.vim/UltiSnips', 'UltiSnips']
 
 let g:pymode_python = 'python3'
 let g:pymode_syntax_all = 1
@@ -141,7 +144,7 @@ set backspace=indent,eol,start
 
 "" Tabs. May be overriten by autocmd rules
 set tabstop=4
-set softtabstop=0
+set softtabstop=4
 set shiftwidth=4
 set expandtab
 

@@ -84,7 +84,7 @@ export GO111MODULE=on
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
 # else
-#   export EDITOR='mvim'
+#   export EDITOR='nvim'
 # fi
 
 # Compilation flags
@@ -102,6 +102,7 @@ export GO111MODULE=on
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
-
+alias vim=nvim
+alias vimcfg= 'nvim ~/.config/nvim/init.vim'
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
